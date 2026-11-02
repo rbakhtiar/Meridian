@@ -1,4 +1,15 @@
-import { getData, addItem, updateItem, deleteItem } from "./data.js";
+import {
+  getData,
+  addItem,
+  updateItem,
+  deleteItem
+} from "./data.js";
+
+import {
+  renderAuth,
+  getCurrentUser,
+  logout
+} from "./auth.js";
 
 import { renderDashboard } from "./dashboard.js";
 import { renderProjects } from "./projects.js";
@@ -22,9 +33,20 @@ const views = {
 };
 
 function refresh() {
+  const user = getCurrentUser();
+
+  if (!user) {
+    document.body.classList.add("auth-mode");
+    renderAuth(refresh);
+    return;
+  }
+
+  document.body.classList.remove("auth-mode");
+
   const [name, renderer] = views[currentView];
 
   breadcrumb.textContent = `Workspace / ${name}`;
+
   app.innerHTML = renderer(getData());
 
   document.querySelectorAll(".nav-item").forEach(button => {
@@ -37,6 +59,7 @@ function refresh() {
 
 function navigate(view) {
   if (!views[view]) return;
+
   currentView = view;
   refresh();
 }
@@ -52,22 +75,22 @@ document.addEventListener("click", event => {
   const remove = event.target.closest("[data-delete]");
 
   if (remove) {
-    const confirmed = confirm("Delete this item?");
-    if (!confirmed) return;
+    if (!confirm("Delete this item?")) return;
 
     deleteItem(remove.dataset.type, remove.dataset.delete);
     refresh();
     return;
   }
 
-  const progressButton = event.target.closest("[data-progress]");
+  const progress = event.target.closest("[data-progress]");
 
-  if (progressButton) {
-    const type = progressButton.dataset.type;
-    const id = progressButton.dataset.id;
-    const value = Number(progressButton.dataset.progress);
+  if (progress) {
+    updateItem(
+      progress.dataset.type,
+      progress.dataset.id,
+      { progress: Number(progress.dataset.progress) }
+    );
 
-    updateItem(type, id, { progress: value });
     refresh();
   }
 });
@@ -75,12 +98,13 @@ document.addEventListener("click", event => {
 document.addEventListener("change", event => {
   const checkbox = event.target.closest("[data-task-check]");
 
-  if (checkbox) {
-    updateItem("tasks", checkbox.dataset.taskCheck, {
-      done: checkbox.checked
-    });
-    refresh();
-  }
+  if (!checkbox) return;
+
+  updateItem("tasks", checkbox.dataset.taskCheck, {
+    done: checkbox.checked
+  });
+
+  refresh();
 });
 
 document.addEventListener("submit", event => {
@@ -94,28 +118,37 @@ document.addEventListener("submit", event => {
   const type = form.dataset.form;
 
   if (type === "projects") {
+    const name = String(formData.get("name") || "").trim();
+    if (!name) return;
+
     addItem("projects", {
-      name: formData.get("name").trim(),
-      description: formData.get("description").trim(),
+      name,
+      description: String(formData.get("description") || "").trim(),
       progress: 0,
       status: "Active",
-      deadline: formData.get("deadline")
+      deadline: formData.get("deadline") || ""
     });
   }
 
   if (type === "goals") {
+    const name = String(formData.get("name") || "").trim();
+    if (!name) return;
+
     addItem("goals", {
-      name: formData.get("name").trim(),
-      description: formData.get("description").trim(),
+      name,
+      description: String(formData.get("description") || "").trim(),
       progress: 0
     });
   }
 
   if (type === "tasks") {
+    const title = String(formData.get("title") || "").trim();
+    if (!title) return;
+
     addItem("tasks", {
-      title: formData.get("title").trim(),
-      project: formData.get("project"),
-      due: formData.get("due"),
+      title,
+      project: formData.get("project") || "",
+      due: formData.get("due") || "",
       done: false
     });
   }
@@ -128,10 +161,12 @@ const commandInput = document.getElementById("commandInput");
 const commandResults = document.getElementById("commandResults");
 
 function openCommand() {
+  if (!getCurrentUser()) return;
+
   overlay.classList.remove("hidden");
   commandInput.value = "";
-  commandInput.focus();
   showCommands("");
+  commandInput.focus();
 }
 
 function closeCommand() {
@@ -150,10 +185,13 @@ function showCommands(query) {
   `).join("");
 }
 
-document.getElementById("commandButton").addEventListener(
-  "click",
-  openCommand
-);
+document.getElementById("commandButton")
+  .addEventListener("click", openCommand);
+
+document.getElementById("logoutButton")
+  .addEventListener("click", () => {
+    if (confirm("Log out of Meridian?")) logout();
+  });
 
 commandInput.addEventListener("input", () => {
   showCommands(commandInput.value);
@@ -161,6 +199,7 @@ commandInput.addEventListener("input", () => {
 
 commandResults.addEventListener("click", event => {
   const button = event.target.closest("[data-command]");
+
   if (!button) return;
 
   navigate(button.dataset.command);
@@ -168,7 +207,8 @@ commandResults.addEventListener("click", event => {
 });
 
 document.addEventListener("keydown", event => {
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+  if ((event.ctrlKey || event.metaKey) &&
+      event.key.toLowerCase() === "k") {
     event.preventDefault();
     openCommand();
   }
