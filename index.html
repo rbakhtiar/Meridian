@@ -3,11 +3,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f7f8f5">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9f6">
 
   <title>Meridian — Your work, connected.</title>
-  <meta name="description" content="Meridian is your personal workspace for projects, goals, tasks, and ideas.">
+  <meta name="description" content="A considered workspace for your projects, goals and ideas.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,54 +21,52 @@
   <div class="app-shell">
 
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">M</div>
+      <a class="brand" href="#" aria-label="Meridian home">
+        <svg class="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="38" height="38" rx="12" stroke="#245C46" stroke-width="1.5"/>
+          <path d="M9 27V13L20 23L31 13V27" stroke="#245C46" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <span>Meridian</span>
-      </div>
+      </a>
 
-      <div class="sidebar-content">
-        <div class="nav-section">
-          <p class="nav-label">WORKSPACE</p>
+      <nav class="sidebar-navigation" aria-label="Main navigation">
+        <p class="nav-label">WORKSPACE</p>
 
-          <button class="nav-item active" data-view="dashboard">
-            <span class="nav-icon">◫</span>
-            <span>Overview</span>
-          </button>
+        <button class="nav-item active" data-view="dashboard">
+          <span>Overview</span>
+        </button>
 
-          <button class="nav-item" data-view="projects">
-            <span class="nav-icon">▧</span>
-            <span>Projects</span>
-          </button>
+        <button class="nav-item" data-view="projects">
+          <span>Projects</span>
+        </button>
 
-          <button class="nav-item" data-view="goals">
-            <span class="nav-icon">◎</span>
-            <span>Goals</span>
-          </button>
+        <button class="nav-item" data-view="goals">
+          <span>Goals</span>
+        </button>
 
-          <button class="nav-item" data-view="tasks">
-            <span class="nav-icon">☑</span>
-            <span>Tasks</span>
-          </button>
+        <button class="nav-item" data-view="tasks">
+          <span>Tasks</span>
+        </button>
 
-          <button class="nav-item" data-view="timeline">
-            <span class="nav-icon">◷</span>
-            <span>Timeline</span>
-          </button>
+        <button class="nav-item" data-view="timeline">
+          <span>Timeline</span>
+        </button>
+
+        <p class="nav-label nav-label-secondary">TOOLS</p>
+
+        <button class="nav-item" data-view="intelligence">
+          <span>Intelligence</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-profile-mark">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="30" height="30" rx="10" stroke="currentColor"/>
+            <path d="M8 22V10L16 18L24 10V22" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-
-        <div class="nav-section">
-          <p class="nav-label">THINKING</p>
-
-          <button class="nav-item" data-view="intelligence">
-            <span class="nav-icon">✳</span>
-            <span>Intelligence</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div class="sidebar-footer-mark">M</div>
-        <div>
+        <div class="sidebar-profile-text">
           <strong>Meridian</strong>
           <span>Personal workspace</span>
         </div>
@@ -77,51 +75,58 @@
 
     <main class="main-area">
       <header class="topbar">
-        <div class="topbar-left">
-          <span class="topbar-context">Your workspace</span>
-        </div>
+        <div class="topbar-context">Workspace</div>
 
         <div class="topbar-actions">
-          <button class="icon-button" id="commandButton" title="Open command palette">
-            ⌘
+          <button
+            class="command-button"
+            id="commandButton"
+            type="button"
+            aria-label="Open command palette"
+          >
+            <span>Search or jump to...</span>
+            <kbd>Ctrl K</kbd>
           </button>
 
-          <button class="icon-button" id="logoutButton" title="Log out">
-            ↗
+          <button
+            class="logout-button"
+            id="logoutButton"
+            type="button"
+          >
+            Log out
           </button>
         </div>
       </header>
 
       <section id="app" class="page-content">
         <div class="loading-state">
-          <div class="loading-mark">M</div>
-          <p>Preparing your workspace...</p>
+          <svg class="loading-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="38" height="38" rx="12" stroke="#245C46" stroke-width="1.5"/>
+            <path d="M9 27V13L20 23L31 13V27" stroke="#245C46" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Preparing your workspace</p>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- Command palette -->
   <div class="command-overlay" id="overlay">
     <div class="command-panel">
       <div class="command-search">
-        <span>⌕</span>
         <input
           type="text"
           id="commandInput"
-          placeholder="Search or run a command..."
+          placeholder="Search your workspace..."
           autocomplete="off"
         >
         <kbd>ESC</kbd>
       </div>
 
-      <div class="command-results" id="commandResults">
-        <p class="command-empty">Start typing to find something.</p>
-      </div>
+      <div class="command-results" id="commandResults"></div>
 
       <div class="command-footer">
-        <span>MERIDIAN COMMAND</span>
-        <span>Navigate your workspace</span>
+        <span>MERIDIAN</span>
+        <span>Command palette</span>
       </div>
     </div>
   </div>
